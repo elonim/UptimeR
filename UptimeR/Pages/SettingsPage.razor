@@ -1,0 +1,198 @@
+﻿@page "/SettingsPage"
+@using System.Text.RegularExpressions
+@using UptimeR.Application.Commands.URLRequests
+@using UptimeR.Application.Interfaces
+@using UptimeR.Services
+@using Mapster
+@inject IURLUseCases URLUseCases
+@inject WorkerService Service
+
+<h1>Settings</h1>
+
+<br />
+<div class="seventy-div">
+    <div>
+        <table class="settings-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>URL</th>
+                    <th>Only ping</th>
+                    <th>Interval</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in uRLs)
+                {
+                    <tr @key="@item">
+                        <td class="settings-td-servicename"><input class="form-control" @bind="item.ServiceName" /></td>
+                        <td class="settings-td-URL"><input class="form-control" @bind="item.Url" /></td>
+                        <td class="settings-td-onlyping"><input type="checkbox" @bind="item.OnlyPing" /></td>
+                        <td class="settings-td-Interval"><input class="form-control" @bind="item.Interval" /></td>
+                        <td class="settings-td-button"><button class="btn btn-primary"
+                            @onclick="(() => Update(item))">Update</button></td>
+                        <td class="settings-td-button"><button class="btn btn-primary"
+                            @onclick="(() => Delete(item))">Delete</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <div>
+            <p>Add New Item</p>
+        </div>
+        <table class="settings-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>URL</th>
+                    <th>Only ping</th>
+                    <th>Interval</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="settings-td-servicename"><input class="form-control" @bind="newUrl.ServiceName" /></td>
+                    <td class="settings-td-URL"><input class="form-control" @bind="newUrl.Url" /></td>
+                    <td class="settings-td-onlyping"><input type="checkbox" @bind="newUrl.OnlyPing" /></td>
+                    <td class="settings-td-Interval"><input class="form-control" @bind="newUrl.Interval" /></td>
+                    <td class="settings-td-button"><button class="btn btn-primary" @onclick="AddNewUrl"> Add</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+    <br />
+
+
+    <p class="alert-info">@errorMessage</p>
+    <br />
+
+    <button class="btn btn-primary" @onclick="Restart">Restart Service</button>
+</div>
+
+@code
+{
+    string errorMessage = "";
+    List<ReadAllURLSSettings> uRLs = new();
+    CreateURLRequest newUrl = new();
+
+    private void Restart()
+    {
+        errorMessage = "Restarting Service";
+        try
+        {
+            RestartHitService();
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            return;
+        }
+    }
+
+    private async Task AddNewUrl()
+    {
+        if (UrlValid(newUrl))
+        {
+            try
+            {
+                await URLUseCases.AddURL(newUrl);
+                await GetUrlsFromDb();
+            }
+            catch (Exception e)
+            {
+                errorMessage = e.Message;
+            }
+            newUrl = new();
+        }
+    }
+
+    private bool UrlValid(CreateURLRequest url)
+    {
+        if (!Regex.IsMatch(url.ServiceName, @"^[a-zA-Z0-9 _-æøåÆØÅ]+$"))
+        {
+            errorMessage = "Service name can only contain letters and numbers";
+            return false;
+        }
+
+        if (!Regex.IsMatch(url.Url,
+        @"^((http|https)://([a-z0-9-]+\.)+[a-z]{2,6}|((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]))(:(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}))?(/[\w/.]*)?$"))
+        {
+            errorMessage = "URL is not valid";
+            return false;
+        }
+        if (url.Interval < 1)
+        {
+            errorMessage = "Interval must be at least 1";
+            return false;
+        }
+        errorMessage = "";
+        return true;
+    }
+
+    private async Task Update(ReadAllURLSSettings url)
+    {
+        if (UrlValid(url.Adapt<CreateURLRequest>()))
+        {
+            try
+            {
+                URLUseCases.UpdateURL(url.Adapt<UpdateURLRequest>());
+                await GetUrlsFromDb();
+            }
+            catch (Exception e)
+            {
+                errorMessage = e.Message;
+            }
+        }
+    }
+
+    private async Task Delete(ReadAllURLSSettings url)
+    {
+        try
+        {
+            URLUseCases.DeleteURL(url.Adapt<DeleteURLRequest>());
+            await GetUrlsFromDb();
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void RestartHitService()
+    {
+        try
+        {
+            Service.StopAsync(new System.Threading.CancellationToken());
+            Service.StartAsync(new System.Threading.CancellationToken());
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUrlsFromDb();
+    }
+
+    private async Task GetUrlsFromDb()
+    {
+        try
+        {
+            uRLs = await URLUseCases.GetAllUrlsAsync();
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}

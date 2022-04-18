@@ -1,0 +1,69 @@
+﻿.succes-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #E0E0E0;
+    color: #000000;
+}
+
+.succes-td-servicename {
+    text-align: left;
+    width: 30%;
+    padding: 8px;
+}
+
+.succes-td-URL {
+    text-align: left;
+    width: 60%;
+    padding: 8px;
+}
+
+.succes-td-result {
+    text-align: center;
+    width: 10%;
+    padding: 8px;
+}
+
+.seventy-div {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.settings-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.settings-td-servicename {
+    text-align: left;
+    width: 30%;
+    padding: 8px;
+}
+
+.settings-input {
+    width: 250px;
+    padding: 8px;
+}
+
+.settings-td-URL {
+    text-align: left;
+    width: 60%;
+    padding: 8px;
+}
+
+.settings-td-onlyping {
+    text-align: center;
+    width: 5%;
+    padding: 8px;
+}
+
+.settings-td-button {
+    text-align: center;
+    width: 5%;
+    padding: 8px;
+}

@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UptimeR.Domain", "UptimeR.Domain\UptimeR.Domain.csproj", "{D936420D-9196-41F8-9914-35EF4352F8C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UptimeR.Application", "UptimeR.Application\UptimeR.Application.csproj", "{3EC182D4-BE75-4431-A493-15C71F3BD505}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UptimeR.Persistance", "UptimeR.Persistance\UptimeR.Persistance.csproj", "{7339E23D-00CC-41CB-ADFE-CD8C4A8F4571}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UptimeR", "UptimeR\UptimeR.csproj", "{D02D3F18-10DB-45BC-BF1D-C86E0FB6C6B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D936420D-9196-41F8-9914-35EF4352F8C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D936420D-9196-41F8-9914-35EF4352F8C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D936420D-9196-41F8-9914-35EF4352F8C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D936420D-9196-41F8-9914-35EF4352F8C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EC182D4-BE75-4431-A493-15C71F3BD505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EC182D4-BE75-4431-A493-15C71F3BD505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EC182D4-BE75-4431-A493-15C71F3BD505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EC182D4-BE75-4431-A493-15C71F3BD505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7339E23D-00CC-41CB-ADFE-CD8C4A8F4571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7339E23D-00CC-41CB-ADFE-CD8C4A8F4571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7339E23D-00CC-41CB-ADFE-CD8C4A8F4571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7339E23D-00CC-41CB-ADFE-CD8C4A8F4571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02D3F18-10DB-45BC-BF1D-C86E0FB6C6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02D3F18-10DB-45BC-BF1D-C86E0FB6C6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02D3F18-10DB-45BC-BF1D-C86E0FB6C6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02D3F18-10DB-45BC-BF1D-C86E0FB6C6B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C5340F2-3999-4E78-9598-67DB98253228}
+	EndGlobalSection
+EndGlobal

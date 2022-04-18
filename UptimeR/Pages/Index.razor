@@ -1,0 +1,75 @@
+﻿@page "/"
+@using UptimeR.Application.Interfaces
+@using UptimeR.Application.Commands.URLRequests
+@inject IURLUseCases URLUseCases
+
+<h1>UpdateR</h1>
+<br />
+<div class="seventy-div">
+    <table class="succes-table">
+        <thead>
+            <tr>
+                <th>
+                    <p>Service Name</p>
+                </th>
+                <th>
+                    <p>URL</p>
+                </th>
+                <th>
+                    <p>Last hit succes</p>
+                </th>
+                <th>
+                    <p>Time of Succes</p>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var url in urls)
+            {
+                <tr @key="@url">
+                    <td class="succes-td-servicename">
+                        <p>@url.ServiceName</p>
+                    </td>
+                    <td class="succes-td-URL">
+                        <p>@url.Url</p>
+                    </td>
+                    <td class="succes-td-result">
+                        @if (url.LastResultOk)
+                        {
+                            <p>✓</p>
+                        }
+                        else
+                        {
+                            <p>✗</p>
+                        }
+                    </td>
+                    <td class="succes-td-result">
+                        <p>@url.LastResultTimeOk.ToLocalTime()</p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p class="alert-info">@errorMessage</p>
+</div>
+
+<br />
+<br />
+
+@code
+{
+    string errorMessage = "";
+    private List<ReadAllURLSSettings> urls = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            urls = await URLUseCases.GetAllUrlsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

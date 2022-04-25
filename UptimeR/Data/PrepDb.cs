@@ -28,6 +28,7 @@ public static class PrepDb
             }
             catch(Exception)
             {
+                Console.WriteLine("--> Error applying migrations!");
             }
         }
 
@@ -36,8 +37,8 @@ public static class PrepDb
             Console.WriteLine("--> Seeding Sample Data!");
 
             context.AddRange(
-                new URL() { ServiceName = "Loopback address", Url = "127.0.0.1", OnlyPing = true, Interval = 1 },
-                new URL() { ServiceName = "Google", Url = "https://google.com", OnlyPing = false, Interval = 10 }
+                new URL() { ServiceName = "Loopback address", Url = "127.0.0.1", OnlyPing = true, Interval = 5 },
+                new URL() { ServiceName = "Google", Url = "https://google.com", OnlyPing = false, Interval = 5 }
                 );
 
             context.SaveChanges();

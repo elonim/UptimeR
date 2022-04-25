@@ -5,7 +5,7 @@ using UptimeR.Application.Commands.LogHistoryReqursts;
 using UptimeR.Application.Commands.URLRequests;
 using UptimeR.Application.Interfaces;
 
-namespace UptimeR.Application;
+namespace UptimeR.Services.Worker;
 
 public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class is a bit of a mess, but it runs as a singleton and uses scoped services, so it's fine.
 {
@@ -21,7 +21,7 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
                 timer.Start();
 
                 if (url.LastHitTime.AddMinutes(url.Interval) > DateTime.Now)
-                    continue;
+                    return;
 
                 if (url.OnlyPing)
                     url.LastResultOk = PingUrl(url.Url);
@@ -43,7 +43,6 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
         {
             Console.WriteLine(ex.Message);
         }
-
     }
 
     private void UpdateURLToDatabase(IURLUseCases UseCases, IUnitOfWork unitOfWork, UpdateURLRequest url)

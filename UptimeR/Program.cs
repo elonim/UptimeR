@@ -30,7 +30,6 @@ builder.Services.AddScoped<ILogHistoryRepository, LogHistoryRepository>();
 builder.Services.AddScoped<IURLUseCases, URLUseCases>();
 builder.Services.AddScoped<ILogHistoryUseCases, LogHistoryUseCases>();
 
-
 builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
 builder.Services.AddSingleton<WorkerService>();
 builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());

@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using UptimeR.Application.Interfaces;
 
 namespace UptimeR.Persistance.Repositorys;

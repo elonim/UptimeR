@@ -1,6 +1,6 @@
-﻿using UptimeR.Persistance;
+﻿using Microsoft.EntityFrameworkCore;
 using UptimeR.Domain;
-using Microsoft.EntityFrameworkCore;
+using UptimeR.Persistance;
 
 namespace UptimeR.Data;
 
@@ -8,7 +8,7 @@ public static class PrepDb
 {
     public static void Preppopulation(IApplicationBuilder app)
     {
-        using (var serviceScope = app.ApplicationServices.CreateScope())
+        using(var serviceScope = app.ApplicationServices.CreateScope())
         {
             SeedDate(serviceScope.ServiceProvider.GetService<DatabaseContext>()!);
         }
@@ -19,19 +19,19 @@ public static class PrepDb
     {
         var dbexist = DatabaseExist(context);
 
-        if (!dbexist)
+        if(!dbexist)
         {
             Console.WriteLine("--> Attempting to apply migrations!");
             try
             {
                 context.Database.Migrate();
             }
-            catch (Exception)
+            catch(Exception)
             {
             }
         }
 
-        if (!context.URLs.Any())
+        if(!context.URLs.Any())
         {
             Console.WriteLine("--> Seeding Sample Data!");
 
@@ -51,7 +51,7 @@ public static class PrepDb
             context.Set<URL>().Count();
             return true;
         }
-        catch (Exception)
+        catch(Exception)
         {
             return false;
         }

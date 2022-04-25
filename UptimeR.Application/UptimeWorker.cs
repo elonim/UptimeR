@@ -63,7 +63,6 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
             var client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(5);
             var response = client.GetAsync(url).Result;
-            var s = response.StatusCode.ToString();
             return response.IsSuccessStatusCode;
         }
         catch (Exception)
@@ -90,16 +89,15 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
     {
         var used = TwoBools(url.OnlyPing);
 
-
         var log = new CreateLogRequest
         {
             Time = url.LastHitTime,
             URLId = url.Id,
             WasUp = url.LastResultOk,
+            ServiceName = url.ServiceName,
             Latency = latency,
             UsedPing = used.Ping,
-            UsedHttp = used.Http,
-            ServiceName = url.ServiceName
+            UsedHttp = used.Http
         };
         logHistoryUse.AddLog(log);
         unitOfWork.SaveChanges();

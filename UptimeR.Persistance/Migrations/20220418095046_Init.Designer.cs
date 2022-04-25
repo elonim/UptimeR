@@ -12,8 +12,8 @@ using UptimeR.Persistance;
 namespace UptimeR.Persistance.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220417195618_logservice")]
-    partial class logservice
+    [Migration("20220418095046_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

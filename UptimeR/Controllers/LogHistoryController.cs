@@ -1,6 +1,7 @@
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using UptimeR.Application.Commands.LogHistoryReqursts;
 using UptimeR.Application.Interfaces;
+using UptimeR.DTOs;
 
 namespace UptimeR.Controllers;
 
@@ -14,8 +15,16 @@ public class LogHistoryController
 
     [HttpGet]
     [Route("/api/logcount")]
-    public async Task<LogItems> Count()
-    { 
-        return await _logHistoryUseCases.CountLogs();
+    public async Task<LogCountDTO> Count()
+    {
+        try
+        {
+            var logCount = await _logHistoryUseCases.CountLogs();
+            return logCount.Adapt<LogCountDTO>();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 }

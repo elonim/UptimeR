@@ -32,10 +32,13 @@ namespace UptimeR.Persistance.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     URLId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    WasUp = table.Column<bool>(type: "bit", nullable: false)
+                    WasUp = table.Column<bool>(type: "bit", nullable: false),
+                    UsedPing = table.Column<bool>(type: "bit", nullable: false),
+                    UsedHttp = table.Column<bool>(type: "bit", nullable: false),
+                    Latency = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {

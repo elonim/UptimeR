@@ -1,4 +1,3 @@
-
 namespace UptimeR.DTOs;
 
 public class URLDTO

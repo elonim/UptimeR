@@ -1,4 +1,3 @@
-
 using Mapster;
 using UptimeR.Application.Commands.LogHistoryReqursts;
 using UptimeR.Application.Interfaces;
@@ -18,15 +17,29 @@ public class LogHistoryUseCases : ILogHistoryUseCases
 
     async Task<LogItems> ILogHistoryUseCases.CountLogs()
     {
-        var count = new LogItems();
-        count.LogHistoryCount = await _repo.CountLogs();
-        return count;
+        try
+        {
+            var count = new LogItems();
+            count.LogHistoryCount = await _repo.CountLogs();
+            return count;
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error getting log history count");
+        }
     }
 
     async Task ILogHistoryUseCases.AddLog(CreateLogRequest command)
     {
-        var log = command.Adapt<LogHistory>();
-        await _repo.AddAsync(log);
-        _unitOfWork.SaveChanges();
+        try
+        {
+            var log = command.Adapt<LogHistory>();
+            await _repo.AddAsync(log);
+            _unitOfWork.SaveChanges();
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error Adding Log");
+        }
     }
 }

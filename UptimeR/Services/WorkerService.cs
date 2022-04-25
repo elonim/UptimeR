@@ -13,7 +13,7 @@ public class WorkerService : IHostedService, IDisposable
         _logger = logger;
         _scopeFactory = scopeFactory;
     }
-    private void DoWork(object? state)
+    private void DoWork(object? state) //yeah yeah yeah, I know this is a bit of a mess, but it runs as a singleton and uses scoped services, so it's fine.
     {
         using var scope = _scopeFactory.CreateScope();
         var worker = scope.ServiceProvider.GetRequiredService<IUptimeWorker>();

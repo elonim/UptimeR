@@ -17,8 +17,14 @@ public class URLController
     [Route("/api/")]
     public async Task<IEnumerable<URLDTO>> GetUrls()
     {
-        var models = await _urlUseCases.GetAllUrlsAsync();
-        var urls = models.Adapt<IEnumerable<URLDTO>>();
-        return  urls;
+        try
+        {
+            var models = await _urlUseCases.GetAllUrlsAsync();
+            return models.Adapt<IEnumerable<URLDTO>>();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 }

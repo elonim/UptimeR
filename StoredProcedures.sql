@@ -1,0 +1,21 @@
+CREATE PROCEDURE GetallLogs
+    @URLid UNIQUEIDENTIFIER
+AS
+SELECT URLId, ServiceName, Time, Wasup, UsedPing, UsedHttp, Latency
+FROM LogHistorys
+WHERE URLid=@URLid
+GO
+
+
+CREATE PROCEDURE GetServices
+AS
+SELECT*
+FROM URLs
+GO
+
+
+CREATE PROCEDURE GetLogs
+AS
+SELECT*
+FROM LogHistorys
+GO

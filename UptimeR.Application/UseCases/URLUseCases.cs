@@ -18,39 +18,74 @@ public class URLUseCases : IURLUseCases
 
     async Task<List<ReadAllURLSSettings>> IURLUseCases.GetAllUrlsAsync()
     {
-        var domainUrls = await _urlRepository.GetAllAsync();
-        _unitOfWork.stoptracking();
-        var urls = domainUrls.Adapt<List<ReadAllURLSSettings>>();
-        return urls;
+        try
+        {
+            var domainUrls = await _urlRepository.GetAllAsync();
+            _unitOfWork.stoptracking();
+            var urls = domainUrls.Adapt<List<ReadAllURLSSettings>>();
+            return urls;
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error Getting URLs");
+        }
     }
     List<ReadAllURLSSettings> IURLUseCases.GetAllUrls()
     {
-        var domainUrls = _urlRepository.GetAll();
-        _unitOfWork.stoptracking(); //For some reason tracking fucks up in IHostedService
-        var urls = domainUrls.Adapt<List<ReadAllURLSSettings>>();
-        return urls;
+        try
+        {
+            var domainUrls = _urlRepository.GetAll();
+            _unitOfWork.stoptracking(); //For some reason tracking fucks up in IHostedService
+            var urls = domainUrls.Adapt<List<ReadAllURLSSettings>>();
+            return urls;
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error Getting URLs");
+        }
     }
 
     async Task IURLUseCases.AddURL(CreateURLRequest command)
     {
-        var url = command.Adapt<URL>();
-        await _urlRepository.AddAsync(url);
-        _unitOfWork.SaveChanges();
+        try
+        {
+            var url = command.Adapt<URL>();
+            await _urlRepository.AddAsync(url);
+            _unitOfWork.SaveChanges();
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error Adding URL");
+        }
     }
 
     void IURLUseCases.UpdateURL(UpdateURLRequest command)
     {
-        var url = command.Adapt<URL>();
-        _unitOfWork.Beginerializable();
-        _urlRepository.Update(url);
-        _unitOfWork.CommitSerializable();
+        try
+        {
+            var url = command.Adapt<URL>();
+            _unitOfWork.Beginerializable();
+            _urlRepository.Update(url);
+            _unitOfWork.CommitSerializable();
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error Updating URL");
+        }
     }
 
     void IURLUseCases.DeleteURL(DeleteURLRequest command)
     {
-        var url = command.Adapt<URL>();
-        _unitOfWork.Beginerializable();
-        _urlRepository.Remove(url);
-        _unitOfWork.CommitSerializable();
+        try
+        {
+            var url = command.Adapt<URL>();
+            _unitOfWork.Beginerializable();
+            _urlRepository.Remove(url);
+            _unitOfWork.CommitSerializable();
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error Deleting URL");
+        }
     }
 }

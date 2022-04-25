@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-UptimeR-88250B13-DD2E-4470-A63C-7D27B302132F</UserSecretsId>
+    <UserSecretsId>aspnet-UptimeR-88250B13-DD2E-4470-A63C-7D27B302132F</UserSecretsId> 
   </PropertyGroup>
 
   <ItemGroup>

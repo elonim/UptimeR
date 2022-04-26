@@ -1,4 +1,5 @@
 using UptimeR.Application.Interfaces;
+using UptimeR.Services.Worker;
 
 namespace UptimeR.Services;
 public class WorkerService : IHostedService, IDisposable
@@ -13,20 +14,22 @@ public class WorkerService : IHostedService, IDisposable
         _logger = logger;
         _scopeFactory = scopeFactory;
     }
+
     private void DoWork(object? state) //yeah yeah yeah, I know this is a bit of a mess, but it runs as a singleton and uses scoped services, so it's fine.
     {
-        using var scope = _scopeFactory.CreateScope();
-        var worker = scope.ServiceProvider.GetRequiredService<IUptimeWorker>();
-        var useCases = scope.ServiceProvider.GetRequiredService<IURLUseCases>();
-        var logUseCases = scope.ServiceProvider.GetRequiredService<ILogHistoryUseCases>();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         try
         {
+            using var scope = _scopeFactory.CreateScope();
+            var worker = scope.ServiceProvider.GetRequiredService<IUptimeWorker>();
+            var useCases = scope.ServiceProvider.GetRequiredService<IURLUseCases>();
+            var logUseCases = scope.ServiceProvider.GetRequiredService<ILogHistoryUseCases>();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
             worker.Work(unitOfWork, useCases, logUseCases);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, "WorkerService: DoWork");
+            _logger.LogError(ex.Message);
         }
     }
 

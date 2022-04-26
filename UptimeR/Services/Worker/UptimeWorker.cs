@@ -41,7 +41,7 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            throw new Exception(ex.Message);
         }
     }
 

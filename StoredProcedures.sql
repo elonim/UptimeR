@@ -19,3 +19,19 @@ AS
 SELECT*
 FROM LogHistorys
 GO
+
+
+CREATE TRIGGER [dbo].[tr_SERVICENAME_Modified]
+   ON [dbo].[URLs]
+   AFTER UPDATE
+AS 
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE LogHistorys SET ServiceName = I.ServiceName
+
+    FROM LogHistorys L
+        INNER JOIN Inserted I on L.URLId = I.Id 
+	WHERE L.ServiceName <> I.ServiceName
+
+END

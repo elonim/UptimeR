@@ -3,7 +3,6 @@ using Mapster;
 using PrepareData.Models;
 using System.Data.SqlClient;
 
-
 namespace PrepareData;
 
 class Program
@@ -11,14 +10,14 @@ class Program
     static void Main()
     {
         var conn = new SqlConnection("Server=elonim.dyndns.dk; Database=UptimeRData; User ID=elonim; Password=Agony1-Recluse-Wham; MultipleActiveResultSets=True;");
-        if(TestConn(conn))
+        if (TestConn(conn))
             Work(conn);
     }
 
     private static bool TestConn(SqlConnection conn)
     {
         conn.Open();
-        if(conn.State == System.Data.ConnectionState.Open)
+        if (conn.State == System.Data.ConnectionState.Open)
         {
             Console.WriteLine("Connection successful... Proceding");
 
@@ -32,53 +31,64 @@ class Program
 
     private static void Work(SqlConnection conn)
     {
-        var urls = conn.Query<URL>("exec GetServices");
         var logs = conn.Query<LogHistory>("exec GetLogs");
 
-        var adaptLog = SortAndConvert(logs);
-        var caclulatedAvg = CalculateAvg(urls, adaptLog);
-
-        Print.PrintToCSV(caclulatedAvg);
+        var adaptLogs = ConvertListToAvgLogs(logs);
+        var splits = SplitLogs(adaptLogs);
+        var caclulated = CalculateAvg(splits);
+        Print.PrintToCSV(caclulated);
     }
 
-    private static List<avgLogs> SortAndConvert(IEnumerable<LogHistory> logs)
+    private static List<AvgLogs> ConvertListToAvgLogs(IEnumerable<LogHistory> logs)
     {
-        var adaptLog = logs.Adapt<List<avgLogs>>();
-        foreach(var log in adaptLog)
+        var adaptLogs = new List<AvgLogs>();
+        foreach (var log in logs)
         {
-            if(log.WasUp)
-                log.UP100 = 100;
-            if(!log.WasUp)
-                log.UP100 = 0;
+            var adaptedlog = log.Adapt<AvgLogs>();
+            if (log.WasUp)
+                adaptedlog.UP100 = 100;
+            if (!log.WasUp)
+                adaptedlog.UP100 = 0;
+
+            adaptLogs.Add(adaptedlog);
         }
-        adaptLog.Sort((x, y) => x.Time.CompareTo(y.Time));
-        return adaptLog;
+
+        adaptLogs.Sort((x, y) => x.Time.CompareTo(y.Time));
+
+        return adaptLogs;
     }
 
-    private static List<avgLogs> CalculateAvg(IEnumerable<URL> urls, List<avgLogs> adaptLog)
+    private static MultibleLogs SplitLogs(List<AvgLogs> logs)
     {
-        var TimeKeeper = DateTime.Now;
-        var avgList = new List<double>();
+        var splittedLogs = new MultibleLogs();
 
-        foreach(var urlItem in urls)
+        foreach (var log in logs.GroupBy(x => x.ServiceName))
         {
-            TimeKeeper = new DateTime(1900, 1, 1, 0, 0, 0);
+            splittedLogs.SortedLogs.Add(log.ToList());
+        }
+        return splittedLogs;
+    }
 
-            foreach(var log in adaptLog.Where(x => x.URLId == urlItem.Id))
+    private static MultibleLogs CalculateAvg(MultibleLogs logs)
+    {
+        Parallel.ForEach(logs.SortedLogs, list =>
+        {
+            var logTime = new Queue<DateTime>();
+            var logUp = new Queue<double>();
+            foreach (var log in list)
             {
-                if(log.Time >= TimeKeeper)
+                logTime.Enqueue(log.Time);
+                logUp.Enqueue(log.UP100);
+
+                log.AvgUpTime = logUp.Sum() / logUp.Count();
+
+                if (logTime.Peek() <= log.Time.AddHours(-24))
                 {
-                    //reset day
-                    TimeKeeper = log.Time.AddDays(1);
-                    avgList = new List<double>();
-                }
-                if(log.Time < TimeKeeper)
-                {
-                    avgList.Add(log.UP100);
-                    log.UpAvg24Hrs = avgList.Average();
+                    _ = logTime.Dequeue();
+                    _ = logUp.Dequeue();
                 }
             }
-        }
-        return adaptLog;
+        });
+        return logs;
     }
 }

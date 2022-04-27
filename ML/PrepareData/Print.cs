@@ -5,15 +5,29 @@ namespace PrepareData;
 
 public class Print
 {
-    public static void PrintToCSV(List<avgLogs> logs)
+    public static void PrintToCSV(MultibleLogs logs)
     {
-        using (StreamWriter writer = new StreamWriter("Logs.csv"))
+        Logfolder();
+        Parallel.ForEach(logs.SortedLogs, list =>
         {
-            string data = ExportListToCSV<avgLogs>(true, logs);
+            var path = "Logs/" + list[0].ServiceName + ".csv";
+            using (StreamWriter writer = new StreamWriter(path))
+            {
+                string data = ExportListToCSV<AvgLogs>(true, list);
 
-            writer.Write(data);
-            writer.Close();
-        }
+                writer.Write(data);
+                writer.Close();
+            }
+        });
+
+    }
+
+    private static void Logfolder()
+    {
+        var logfolder = "Logs";
+        var exists = Directory.Exists(logfolder);
+        if (!exists)
+            Directory.CreateDirectory(logfolder);
     }
 
     private static string FormatCSVField(string data)

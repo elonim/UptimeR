@@ -29,16 +29,17 @@ builder.Services.AddScoped<ILogHistoryRepository, LogHistoryRepository>();
 builder.Services.AddScoped<IURLUseCases, URLUseCases>();
 builder.Services.AddScoped<ILogHistoryUseCases, LogHistoryUseCases>();
 
-builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
-builder.Services.AddSingleton<WorkerService>();
-builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
+//Background Service deaktiveret for ikke at lave dubletter hvis man debugger 
+//builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
+//builder.Services.AddSingleton<WorkerService>();
+//builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
 
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }

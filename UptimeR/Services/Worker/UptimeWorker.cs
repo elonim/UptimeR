@@ -18,10 +18,10 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
         {
             foreach (var url in urls)
             {
-                timer.Start();
-
                 if (url.LastHitTime.AddMinutes(url.Interval) > DateTime.Now)
-                    return;
+                    continue;
+                
+                timer.Start();
 
                 if (url.OnlyPing)
                     url.LastResultOk = PingUrl(url.Url);

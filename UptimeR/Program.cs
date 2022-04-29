@@ -7,8 +7,6 @@ using UptimeR.Areas.Identity;
 using UptimeR.Data;
 using UptimeR.Persistance;
 using UptimeR.Persistance.Repositorys;
-using UptimeR.Services;
-using UptimeR.Services.Worker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +37,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+if(app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }

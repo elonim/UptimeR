@@ -12,7 +12,6 @@ public class LogHistoryRepository : Repository<LogHistory>, ILogHistoryRepositor
     {
         _context = context;
     }
-
     public async Task<int> CountLogs()
     {
         return await _context.LogHistorys.CountAsync();

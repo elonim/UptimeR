@@ -4,10 +4,19 @@
 @using UptimeR.Application.Commands.LogHistoryReqursts
 @using UptimeR.Application.Interfaces
 @using UptimeR.Validation
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IURLUseCases URLUseCases
 @inject ILogHistoryUseCases LogHistoryUseCases
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <h1>Settings</h1>
+<AuthorizeView Policy="Admin">
+    <Authorizing>
+        <h1>Loading...</h1>
+    </Authorizing>
+<Authorized>
 
 <br />
 <div class="seventy-div">
@@ -75,6 +84,19 @@
     <br />
     <p>Number of logs in Database @logs.LogHistoryCount</p>
 </div>
+
+
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            <h1 style="text-align: center; Font-size:108px   "title="Du ved vi har styr på det">Tro på det <br /> Christina RehmeJer</h1>
+        </div>
+                    
+</NotAuthorized>
+</AuthorizeView>
+
+                
+
 
 @code
 {

@@ -7,6 +7,7 @@ using UptimeR.Areas.Identity;
 using UptimeR.Data;
 using UptimeR.Persistance;
 using UptimeR.Persistance.Repositorys;
+using UptimeR.Policies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,13 @@ builder.Services.AddScoped<ILogHistoryRepository, LogHistoryRepository>();
 
 builder.Services.AddScoped<IURLUseCases, URLUseCases>();
 builder.Services.AddScoped<ILogHistoryUseCases, LogHistoryUseCases>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy =>
+        policy.RequireClaim(Storage_Claims.Admin.Type, Storage_Claims.Admin.Value));
+});
+
 
 //Background Service deaktiveret for ikke at lave dubletter hvis man debugger 
 //builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();

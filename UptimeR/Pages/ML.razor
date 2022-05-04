@@ -1,0 +1,42 @@
+@page "/ML"
+@using UptimeR.ML.Trainer
+@inject IAnomalyDetector anomalyDetector
+
+<h1>Machine Learning</h1>
+<AuthorizeView Policy="Admin">
+    <Authorizing>
+        <h1>Loading...</h1>
+    </Authorizing>
+    <Authorized>
+
+        <p class="alert-info">@errorMessage</p>
+
+        <button class="btn btn-primary" @onclick="Train">Train</button>
+
+
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            <h1 style="text-align: center; Font-size:108px   " title="Du ved vi har styr på det">Tro på det <br />
+                Christina</h1>
+        </div>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    string errorMessage = "";
+
+    private void Train()
+    {
+        try
+        {
+            anomalyDetector.Detect();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

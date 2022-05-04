@@ -4,7 +4,6 @@
 @using UptimeR.Application.Commands.LogHistoryReqursts
 @using UptimeR.Application.Interfaces
 @using UptimeR.Validation
-@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IURLUseCases URLUseCases
 @inject ILogHistoryUseCases LogHistoryUseCases
@@ -16,86 +15,90 @@
     <Authorizing>
         <h1>Loading...</h1>
     </Authorizing>
-<Authorized>
+    <Authorized>
 
-<br />
-<div class="seventy-div">
-    <div>
-        <table class="settings-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>URL</th>
-                    <th>Only ping</th>
-                    <th>Interval</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in uRLs)
-                {
-                    <tr @key="@item">
-                        <td class="settings-td-servicename"><input class="form-control" @bind="item.ServiceName" /></td>
-                        <td class="settings-td-URL"><input class="form-control" @bind="item.Url" /></td>
-                        <td class="settings-td-onlyping"><input type="checkbox" @bind="item.OnlyPing" /></td>
-                        <td class="settings-td-Interval"><input class="form-control" @bind="item.Interval" /></td>
-                        <td class="settings-td-button"><button class="btn btn-primary"
-                            @onclick="(() => Update(item))">Update</button></td>
-                        <td class="settings-td-button"><button class="btn btn-primary"
-                            @onclick="(() => Delete(item))">Delete</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <br />
-    <div>
-        <div>
-            <p>Add New Item</p>
+        <br />
+        <div class="seventy-div">
+            <div>
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>URL</th>
+                            <th>Only ping</th>
+                            <th>Interval</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in uRLs)
+                        {
+                            <tr @key="@item">
+                                <td class="settings-td-servicename"><input class="form-control" @bind="item.ServiceName" />
+                                </td>
+                                <td class="settings-td-URL"><input class="form-control" @bind="item.Url" /></td>
+                                <td class="settings-td-onlyping"><input type="checkbox" @bind="item.OnlyPing" /></td>
+                                <td class="settings-td-Interval"><input class="form-control" @bind="item.Interval" /></td>
+                                <td class="settings-td-button"><button class="btn btn-primary"
+                                    @onclick="(() => Update(item))">Update</button></td>
+                                <td class="settings-td-button"><button class="btn btn-primary"
+                                    @onclick="(() => Delete(item))">Delete</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <br />
+            <div>
+                <div>
+                    <p>Add New Item</p>
+                </div>
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>URL</th>
+                            <th>Only ping</th>
+                            <th>Interval</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="settings-td-servicename"><input class="form-control"
+                                    @bind="newUrl.ServiceName" /></td>
+                            <td class="settings-td-URL"><input class="form-control" @bind="newUrl.Url" /></td>
+                            <td class="settings-td-onlyping"><input type="checkbox" @bind="newUrl.OnlyPing" /></td>
+                            <td class="settings-td-Interval"><input class="form-control" @bind="newUrl.Interval" /></td>
+                            <td class="settings-td-button"><button class="btn btn-primary" @onclick="AddNewUrl">
+                                    Add</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <br />
+            <br />
+
+
+            <p class="alert-info">@errorMessage</p>
+            <br />
+            <p>Number of logs in Database @logs.LogHistoryCount</p>
         </div>
-        <table class="settings-table">
-            <thead>
-                <tr>
-                    <th>Service Name</th>
-                    <th>URL</th>
-                    <th>Only ping</th>
-                    <th>Interval</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="settings-td-servicename"><input class="form-control" @bind="newUrl.ServiceName" /></td>
-                    <td class="settings-td-URL"><input class="form-control" @bind="newUrl.Url" /></td>
-                    <td class="settings-td-onlyping"><input type="checkbox" @bind="newUrl.OnlyPing" /></td>
-                    <td class="settings-td-Interval"><input class="form-control" @bind="newUrl.Interval" /></td>
-                    <td class="settings-td-button"><button class="btn btn-primary" @onclick="AddNewUrl"> Add</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <br />
-    <br />
-
-
-    <p class="alert-info">@errorMessage</p>
-    <br />
-    <p>Number of logs in Database @logs.LogHistoryCount</p>
-</div>
 
 
     </Authorized>
     <NotAuthorized>
         <div>
-            <h1 style="text-align: center; Font-size:108px   "title="Du ved vi har styr på det">Tro på det <br /> Christina RehmeJer</h1>
+            <h1 style="text-align: center; Font-size:108px   " title="Du ved vi har styr på det">Tro på det <br />
+                Christina RehmeJer</h1>
         </div>
-                    
-</NotAuthorized>
+
+    </NotAuthorized>
 </AuthorizeView>
 
-                
+
 
 
 @code

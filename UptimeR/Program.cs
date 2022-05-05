@@ -5,6 +5,7 @@ using UptimeR.Application.Interfaces;
 using UptimeR.Application.UseCases;
 using UptimeR.Areas.Identity;
 using UptimeR.Data;
+using UptimeR.ML.Trainer;
 using UptimeR.Persistance;
 using UptimeR.Persistance.Repositorys;
 using UptimeR.Policies;
@@ -39,6 +40,9 @@ builder.Services.AddAuthorization(options =>
 //builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
 //builder.Services.AddSingleton<WorkerService>();
 //builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
+
+builder.Services.AddScoped<IAnomalyDetector,AnomalyDetector>();
+builder.Services.AddScoped<IRavenDB,RavenDB>();
 
 builder.Services.AddControllers();
 

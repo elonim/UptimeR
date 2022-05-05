@@ -65,9 +65,10 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="settings-td-servicename"><input class="form-control"
+                            <td class="settings-td-servicename"><input class="form-control" placeholder="fx. Google"
                                     @bind="newUrl.ServiceName" /></td>
-                            <td class="settings-td-URL"><input class="form-control" @bind="newUrl.Url" /></td>
+                            <td class="settings-td-URL"><input class="form-control" @bind="newUrl.Url"
+                                    placeholder="fx. https://google.com eller 192.168.0.1" /></td>
                             <td class="settings-td-onlyping"><input type="checkbox" @bind="newUrl.OnlyPing" /></td>
                             <td class="settings-td-Interval"><input class="form-control" @bind="newUrl.Interval" /></td>
                             <td class="settings-td-button"><button class="btn btn-primary" @onclick="AddNewUrl">
@@ -92,7 +93,7 @@
     <NotAuthorized>
         <div>
             <h1 style="text-align: center; Font-size:108px   " title="Du ved vi har styr på det">Tro på det <br />
-                Christina RehmeJer</h1>
+                Christina</h1>
         </div>
 
     </NotAuthorized>

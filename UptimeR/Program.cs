@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Uptimer.ML.Reader;
 using UptimeR.Application.Interfaces;
 using UptimeR.Application.UseCases;
 using UptimeR.Areas.Identity;
@@ -45,6 +46,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
 builder.Services.AddScoped<IRavenDB, RavenDB>();
 builder.Services.AddScoped<ISQLConn, SQLConn>();
+builder.Services.AddScoped<IReader, Reader>();
 
 builder.Services.AddControllers();
 

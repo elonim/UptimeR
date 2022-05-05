@@ -6,21 +6,22 @@
 		<UserSecretsId>aspnet-UptimeR-88250B13-DD2E-4470-A63C-7D27B302132F</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="FluentValidation.AspNetCore" Version="11.0.0"/>
-		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4"/>
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.4"/>
-		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.4"/>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4"/>
+		<PackageReference Include="FluentValidation.AspNetCore" Version="11.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\ML\UptimeR.ML.Trainer\UptimeR.ML.Trainer.csproj"/>
-		<ProjectReference Include="..\UptimeR.Persistance\UptimeR.Persistance.csproj"/>
+		<ProjectReference Include="..\ML\Uptimer.ML.Reader\Uptimer.ML.Reader.csproj" />
+		<ProjectReference Include="..\ML\UptimeR.ML.Trainer\UptimeR.ML.Trainer.csproj" />
+		<ProjectReference Include="..\UptimeR.Persistance\UptimeR.Persistance.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Services\"/>
+		<Folder Include="Services\" />
 	</ItemGroup>
 </Project>

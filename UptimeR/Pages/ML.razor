@@ -1,6 +1,8 @@
 @page "/ML"
 @using UptimeR.ML.Trainer.Interfaces
+@using Uptimer.ML.Reader
 @inject IAnomalyDetector anomalyDetector
+@inject IReader Reader
 
 <h1>Machine Learning</h1>
 <AuthorizeView Policy="Admin">
@@ -13,9 +15,37 @@
 
         <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
 
-        <br><br><br><br>
+        <br><br>
 
         <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
+        <br><br>
+
+        <p>Anomalies Detected on @anomalies.Date</p>
+        <table class="succes-table">
+            <thead>
+                <tr>
+                    <th>
+                        <p>Service Name</p>
+                    </th>
+                    <th>
+                        <p>Anomalies</p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in anomalies.Anomalies)
+                {
+                    <tr >
+                        <td class="succes-td-servicename">
+                            <p>@a.Servicename</p>
+                        </td>
+                        <td>
+                            <p>@a.AnomalyCount</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
 
     </Authorized>
@@ -30,6 +60,7 @@
 
 @code
 {
+    private ServiceAnomalies anomalies = new();
     string errorMessage = "";
 
     private void Train()
@@ -48,6 +79,18 @@
         try
         {
             anomalyDetector.Detect24Hours(DateTime.Now);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            anomalies = Reader.GetAllCustomers();
         }
         catch (Exception ex)
         {

@@ -1,5 +1,5 @@
 @page "/ML"
-@using UptimeR.ML.Trainer
+@using UptimeR.ML.Trainer.Interfaces
 @inject IAnomalyDetector anomalyDetector
 
 <h1>Machine Learning</h1>
@@ -11,7 +11,11 @@
 
         <p class="alert-info">@errorMessage</p>
 
-        <button class="btn btn-primary" @onclick="Train">Train</button>
+        <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
+
+        <br><br><br><br>
+
+        <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
 
 
     </Authorized>
@@ -33,6 +37,17 @@
         try
         {
             anomalyDetector.Detect();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+    private void Train24()
+    {
+        try
+        {
+            anomalyDetector.Detect24Hours(DateTime.Now);
         }
         catch (Exception ex)
         {

@@ -29,7 +29,7 @@ public class AnomalyDetector : IAnomalyDetector
     {
         var toDate = time.ToString("yyyy-MM-dd");
         var fromDate = time.AddDays(-1).ToString("yyyy-MM-dd");
-        
+
         var query = $"exec GetLogsBetween '{fromDate}', '{toDate}'";
         var conn = _sqlConn.CreateConnection();
         if (_sqlConn.TestConn(conn))
@@ -45,6 +45,8 @@ public class AnomalyDetector : IAnomalyDetector
 
     private void Calculate(SortedLogs logs)
     {
+        var serviceAnomalies = new ServiceAnomalies(); //opret objekt for at vise resultater af anomaliteter
+        serviceAnomalies.Date= DateOnly.FromDateTime(DateTime.Now);
         Parallel.ForEach(logs.Logs, list =>
         {
             var logdata = list.Adapt<List<InputData>>();
@@ -55,6 +57,7 @@ public class AnomalyDetector : IAnomalyDetector
             var ravenlog = new RavenLog();
             try
             {
+                ravenlog.ServiceName = list[0].ServiceName;
                 foreach (var p in predictions)
                 {
                     ravenlog.Logs.Add(new AnomalyLog
@@ -63,25 +66,44 @@ public class AnomalyDetector : IAnomalyDetector
                         Score = p.Prediction[1],
                         PValue = p.Prediction[2],
                         Time = p.Time
-                    }
-                    );
+                    });
                 }
-                ravenlog.ServiceName = list[0].ServiceName;
                 ravenlog.NumberOfAnomalies = CountAnomalies(ravenlog.Logs);
             }
             catch (Exception)
             {
                 throw new Exception("Convert Error");
             }
-            _ravenDB.SaveLogs(ravenlog);
+
+            try
+            {
+                //opret objekt for at vise resultater af anomaliteter
+                var anomaly = new Anomaly();
+                anomaly.Servicename = list[0].ServiceName;
+                anomaly.AnomalyCount = ravenlog.NumberOfAnomalies;
+                serviceAnomalies.Anomalies.Add(anomaly);
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            _ravenDB.Save(ravenlog);
         });
+
+        serviceAnomalies.Anomalies.Sort((x, y) => x.Servicename.CompareTo(y.Servicename));
+        _ravenDB.Save(serviceAnomalies);
     }
 
     private IEnumerable<AnomalyPrediction> DetectSpike(MLContext mlContext, int docSize, IDataView productSales)
     {
         try
         {
-            var iidSpikeEstimator = mlContext.Transforms.DetectIidSpike(outputColumnName: nameof(AnomalyPrediction.Prediction), inputColumnName: nameof(InputData.Latency), confidence: 95.0, pvalueHistoryLength: docSize / 4);
+            var iidSpikeEstimator = mlContext.Transforms.DetectIidSpike(outputColumnName: nameof(AnomalyPrediction.Prediction),
+                                    inputColumnName: nameof(InputData.Latency),
+                                    confidence: 95.0,
+                                    pvalueHistoryLength: docSize / 4);
 
             ITransformer iidSpikeTransform = iidSpikeEstimator.Fit(CreateEmptyDataView(mlContext));
             IDataView transformedData = iidSpikeTransform.Transform(productSales);

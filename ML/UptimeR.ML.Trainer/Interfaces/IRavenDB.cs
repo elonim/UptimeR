@@ -4,5 +4,6 @@ namespace UptimeR.ML.Trainer.Interfaces;
 
 public interface IRavenDB
 {
-    void SaveLogs(RavenLog log);
+    void Save(RavenLog log);
+    void Save(ServiceAnomalies anomalies);
 }

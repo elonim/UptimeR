@@ -1,35 +1,46 @@
 using System.Data.SqlClient;
 using Dapper;
 using Mapster;
-using Microsoft.Extensions.Configuration;
 using Microsoft.ML;
+using UptimeR.ML.Trainer.Interfaces;
 using UptimeR.ML.Trainer.Models;
 
 namespace UptimeR.ML.Trainer;
 
 public class AnomalyDetector : IAnomalyDetector
 {
-    private readonly IConfiguration _config;
     private readonly IRavenDB _ravenDB;
-    public AnomalyDetector(IConfiguration config, IRavenDB ravenDB)
+    private readonly ISQLConn _sqlConn;
+    public AnomalyDetector(IRavenDB ravenDB, ISQLConn sqlConn)
     {
         _ravenDB = ravenDB;
-        _config = config;
+        _sqlConn = sqlConn;
     }
 
     public void Detect()
     {
-        var connString = _config.GetConnectionString("DataConnection");
-        var conn = new SqlConnection(connString);
-        if (TestConn(conn))
-            Work(conn);
+        var query = "select Time,Latency,ServiceName from LogHistorys";
+        var conn = _sqlConn.CreateConnection();
+        if (_sqlConn.TestConn(conn))
+            Work(conn, query);
     }
 
-    private void Work(SqlConnection conn)
+    public void Detect24Hours(DateTime time)
     {
-        var allLogs = conn.Query<Logs>("select Time,Latency,ServiceName from LogHistorys");
-        var allSortedLogs = SplitLogs(allLogs);
-        Calculate(allSortedLogs);
+        var toDate = time.ToString("yyyy-MM-dd");
+        var fromDate = time.AddDays(-1).ToString("yyyy-MM-dd");
+        
+        var query = $"exec GetLogsBetween '{fromDate}', '{toDate}'";
+        var conn = _sqlConn.CreateConnection();
+        if (_sqlConn.TestConn(conn))
+            Work(conn, query);
+    }
+
+    private void Work(SqlConnection conn, string query)
+    {
+        var allLogs = conn.Query<Logs>(query);
+        var sortedLogs = new SortedLogs().SplitLogs(allLogs);
+        Calculate(sortedLogs);
     }
 
     private void Calculate(SortedLogs logs)
@@ -44,7 +55,6 @@ public class AnomalyDetector : IAnomalyDetector
             var ravenlog = new RavenLog();
             try
             {
-                var anomalyLogs = new List<AnomalyLog>();
                 foreach (var p in predictions)
                 {
                     ravenlog.Logs.Add(new AnomalyLog
@@ -57,6 +67,7 @@ public class AnomalyDetector : IAnomalyDetector
                     );
                 }
                 ravenlog.ServiceName = list[0].ServiceName;
+                ravenlog.NumberOfAnomalies = CountAnomalies(ravenlog.Logs);
             }
             catch (Exception)
             {
@@ -66,31 +77,11 @@ public class AnomalyDetector : IAnomalyDetector
         });
     }
 
-
-
-    private SortedLogs SplitLogs(IEnumerable<Logs> logs)
-    {
-        try
-        {
-            var splittedLogs = new SortedLogs();
-
-            foreach (var log in logs.GroupBy(x => x.ServiceName))
-            {
-                splittedLogs.Logs.Add(log.ToList());
-            }
-            return splittedLogs;
-        }
-        catch (Exception)
-        {
-            throw new Exception("Error 665");
-        }
-    }
-
     private IEnumerable<AnomalyPrediction> DetectSpike(MLContext mlContext, int docSize, IDataView productSales)
     {
         try
         {
-            var iidSpikeEstimator = mlContext.Transforms.DetectIidSpike(outputColumnName: nameof(AnomalyPrediction.Prediction), inputColumnName: nameof(InputData.Latency), confidence: 99.0, pvalueHistoryLength: docSize / 4);
+            var iidSpikeEstimator = mlContext.Transforms.DetectIidSpike(outputColumnName: nameof(AnomalyPrediction.Prediction), inputColumnName: nameof(InputData.Latency), confidence: 95.0, pvalueHistoryLength: docSize / 4);
 
             ITransformer iidSpikeTransform = iidSpikeEstimator.Fit(CreateEmptyDataView(mlContext));
             IDataView transformedData = iidSpikeTransform.Transform(productSales);
@@ -108,16 +99,28 @@ public class AnomalyDetector : IAnomalyDetector
         IEnumerable<InputData> enumerableData = new List<InputData>();
         return mlContext.Data.LoadFromEnumerable(enumerableData);
     }
-    private bool TestConn(SqlConnection conn)
+
+    private int CountAnomalies(List<AnomalyLog> logs)
     {
-        conn.Open();
-        if (conn.State == System.Data.ConnectionState.Open)
+        var anoCount = 0;
+
+        var anomality = 0;
+        foreach (var log in logs)
         {
-            conn.Close();
-            return true;
+            if (log.Alert == 1)
+            {
+                anomality++;
+            }
+            if (anomality == 2)
+            {
+                anoCount++;
+            }
+            if (log.Alert == 0)
+            {
+                anomality = 0;
+            }
         }
-        conn.Close();
-        return false;
+        return anoCount;
     }
 }
 

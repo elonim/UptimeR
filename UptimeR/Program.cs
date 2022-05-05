@@ -6,6 +6,7 @@ using UptimeR.Application.UseCases;
 using UptimeR.Areas.Identity;
 using UptimeR.Data;
 using UptimeR.ML.Trainer;
+using UptimeR.ML.Trainer.Interfaces;
 using UptimeR.Persistance;
 using UptimeR.Persistance.Repositorys;
 using UptimeR.Policies;
@@ -41,15 +42,16 @@ builder.Services.AddAuthorization(options =>
 //builder.Services.AddSingleton<WorkerService>();
 //builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
 
-builder.Services.AddScoped<IAnomalyDetector,AnomalyDetector>();
-builder.Services.AddScoped<IRavenDB,RavenDB>();
+builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
+builder.Services.AddScoped<IRavenDB, RavenDB>();
+builder.Services.AddScoped<ISQLConn, SQLConn>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
 
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }

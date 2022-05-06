@@ -4,6 +4,7 @@
 @inject IAnomalyDetector anomalyDetector
 @inject IReader Reader
 
+
 <h1>Machine Learning</h1>
 <AuthorizeView Policy="Admin">
     <Authorizing>
@@ -20,6 +21,12 @@
         <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
         <br><br>
 
+        <!--datepicker her omkring ca...-->
+
+
+        <input type="date" id="datepicker" />
+
+
         <p>Anomalies Detected on @anomalies.Date</p>
         <table class="succes-table">
             <thead>
@@ -35,7 +42,7 @@
             <tbody>
                 @foreach (var a in anomalies.Anomalies)
                 {
-                    <tr >
+                    <tr>
                         <td class="succes-td-servicename">
                             <p>@a.Servicename</p>
                         </td>
@@ -51,7 +58,7 @@
     </Authorized>
     <NotAuthorized>
         <div>
-            <h1 style="text-align: center; Font-size:108px   " title="Du ved vi har styr på det">Tro på det <br />
+            <h1 style="text-align: center; Font-size:108px" title="Du ved vi har styr på det">Tro på det <br />
                 Christina</h1>
         </div>
 
@@ -62,6 +69,7 @@
 {
     private ServiceAnomalies anomalies = new();
     string errorMessage = "";
+    DateOnly date = DateOnly.FromDateTime(new DateTime(2022, 05, 05, 0, 0, 0));
 
     private void Train()
     {
@@ -74,6 +82,7 @@
             errorMessage = ex.Message;
         }
     }
+
     private void Train24()
     {
         try
@@ -90,11 +99,16 @@
     {
         try
         {
-            anomalies = Reader.GetAllCustomers();
+            await GetAnomalies(date);
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
         }
+    }
+
+    private async Task GetAnomalies(DateOnly date)
+    {
+        anomalies = await Reader.GetAnomaliesForDate(date);
     }
 }

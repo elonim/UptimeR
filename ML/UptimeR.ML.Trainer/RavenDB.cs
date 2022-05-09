@@ -1,6 +1,6 @@
 using Raven.Client.Documents;
+using UptimeR.ML.Domain.Models.RavenModels;
 using UptimeR.ML.Trainer.Interfaces;
-using UptimeR.ML.Trainer.Models;
 
 namespace UptimeR.ML.Trainer;
 

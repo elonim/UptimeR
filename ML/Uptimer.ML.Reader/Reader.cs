@@ -1,11 +1,7 @@
 using Raven.Client.Documents;
+using UptimeR.ML.Domain.Models.RavenModels;
 
 namespace Uptimer.ML.Reader;
-
-public interface IReader
-{
-    Task<ServiceAnomalies> GetAnomaliesForDate(DateOnly date);
-}
 
 public class Reader : IReader
 {
@@ -34,10 +30,7 @@ public class Reader : IReader
 
             var result = await session
                 .Query<ServiceAnomalies>()
-                .Search(x => x.Date, new[]
-                 {
-                date.ToString("yyyy-MM-dd")
-                 })
+                .Search(x => x.Date, new[] { date.ToString("yyyy-MM-dd") })
                 .SingleOrDefaultAsync();
 
             if (result == null)
@@ -47,6 +40,30 @@ public class Reader : IReader
         catch (Exception)
         {
             throw new Exception("RavenDB Error");
+        }
+    }
+
+
+    public async Task<RavenLog> GetAnomaliesForService(DateOnly date, String serviceName)
+    {
+        try
+        {
+            using var documentStore = CreateStore();
+            using var session = documentStore.OpenAsyncSession();
+
+            var result = await session
+                .Query<RavenLog>()
+                .Search(x => x.Date, new[] { date.ToString("yyyy-MM-dd") })
+                .Search(x => x.ServiceName, new[] { serviceName })
+                .SingleOrDefaultAsync();
+
+            if (result == null)
+                return new RavenLog();
+            return result;
+        }
+        catch (Exception)
+        {
+            throw new Exception("RavenDB Error 333");
         }
     }
 }

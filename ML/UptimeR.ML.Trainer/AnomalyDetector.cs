@@ -2,8 +2,10 @@ using System.Data.SqlClient;
 using Dapper;
 using Mapster;
 using Microsoft.ML;
+using UptimeR.ML.Domain.Models;
+using UptimeR.ML.Domain.Models.MLModels;
+using UptimeR.ML.Domain.Models.RavenModels;
 using UptimeR.ML.Trainer.Interfaces;
-using UptimeR.ML.Trainer.Models;
 
 namespace UptimeR.ML.Trainer;
 
@@ -59,6 +61,7 @@ public class AnomalyDetector : IAnomalyDetector
             try
             {
                 ravenlog.ServiceName = list[0].ServiceName;
+                ravenlog.Date = DateOnly.FromDateTime(list[0].Time);
                 foreach (var p in predictions)
                 {
                     ravenlog.Logs.Add(new AnomalyLog
@@ -88,11 +91,9 @@ public class AnomalyDetector : IAnomalyDetector
             {
                 throw new Exception(e.Message);
             }
-            if (serviceAnomalies.Date != null)
-                serviceAnomalies.Date = DateOnly.FromDateTime(list[0].Time);
+            serviceAnomalies.Date = DateOnly.FromDateTime(list[0].Time);//burde ikke stå her da den bliver kørt i hvert loop og ikke kun en gang
             _ravenDB.Save(ravenlog);
         });
-
 
 
         serviceAnomalies.Anomalies.Sort((x, y) => x.Servicename.CompareTo(y.Servicename));

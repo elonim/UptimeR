@@ -1,4 +1,4 @@
-using UptimeR.ML.Trainer.Models;
+using UptimeR.ML.Domain.Models.RavenModels;
 
 namespace UptimeR.ML.Trainer.Interfaces;
 

@@ -1,6 +1,7 @@
 @page "/ML"
 @using UptimeR.ML.Trainer.Interfaces
 @using Uptimer.ML.Reader
+@using UptimeR.ML.Domain.Models.RavenModels
 @inject IAnomalyDetector anomalyDetector
 @inject IReader Reader
 
@@ -51,6 +52,10 @@
                         <td>
                             <p>@a.AnomalyCount</p>
                         </td>
+                        <td>
+                            <p><button class="btn btn-primary" @onclick="(() => DownloadLog(a.Servicename))">Download
+                                    Logs</button></p>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -72,6 +77,18 @@
     private ServiceAnomalies anomalies = new();
     string errorMessage = "";
     DateOnly date = DateOnly.FromDateTime(DateTime.Now).AddDays(-1);
+
+    private async Task DownloadLog(string servicename)
+    {
+        try
+        {
+            var result = await Reader.GetAnomaliesForService(date, servicename);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
 
     private void Train()
     {

@@ -39,9 +39,13 @@ builder.Services.AddAuthorization(options =>
 
 
 //Background Service deaktiveret for ikke at lave dubletter hvis man debugger 
-//builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
-//builder.Services.AddSingleton<WorkerService>();
-//builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
+/*
+builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
+builder.Services.AddSingleton<WorkerService>();
+builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
+builder.Services.AddSingleton<DetectAnomaliesService>();
+builder.Services.AddHostedService(s => s.GetRequiredService<DetectAnomaliesService>());
+*/
 
 builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
 builder.Services.AddScoped<IRavenDB, RavenDB>();
@@ -53,7 +57,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+if(app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }

@@ -23,8 +23,10 @@
 
         <!--datepicker her omkring ca...-->
 
-
-        <input type="date" id="datepicker" />
+        <div>
+            <input type="date" id="datepicker" @bind-value="date" class="form-control-sm" />
+            <button class="btn btn-primary" @onclick="(() => GetAnomalies(date))">Indlæs logs</button>
+        </div>
 
 
         <p>Anomalies Detected on @anomalies.Date</p>
@@ -69,7 +71,7 @@
 {
     private ServiceAnomalies anomalies = new();
     string errorMessage = "";
-    DateOnly date = DateOnly.FromDateTime(new DateTime(2022, 05, 05, 0, 0, 0));
+    DateOnly date = DateOnly.FromDateTime(DateTime.Now).AddDays(-1);
 
     private void Train()
     {
@@ -87,7 +89,7 @@
     {
         try
         {
-            anomalyDetector.Detect24Hours(DateTime.Now);
+            anomalyDetector.Detect24Hours(date);
         }
         catch (Exception ex)
         {

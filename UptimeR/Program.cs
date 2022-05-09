@@ -11,6 +11,8 @@ using UptimeR.ML.Trainer.Interfaces;
 using UptimeR.Persistance;
 using UptimeR.Persistance.Repositorys;
 using UptimeR.Policies;
+using UptimeR.Services;
+using UptimeR.Services.Worker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,9 +45,11 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddTransient<IUptimeWorker, UptimeWorker>();
 builder.Services.AddSingleton<WorkerService>();
 builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
+
 builder.Services.AddSingleton<DetectAnomaliesService>();
 builder.Services.AddHostedService(s => s.GetRequiredService<DetectAnomaliesService>());
 */
+
 
 builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
 builder.Services.AddScoped<IRavenDB, RavenDB>();

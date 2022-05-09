@@ -1,4 +1,3 @@
-
 using UptimeR.ML.Trainer.Interfaces;
 
 namespace UptimeR.Services;
@@ -17,6 +16,18 @@ public class DetectAnomaliesService : IHostedService, IDisposable
     }
     private void DoWork(object? state) //yeah yeah yeah, I know this is a bit of a mess, but it runs as a singleton and uses scoped services, so it's fine.
     {
+
+        //Countdown to midnight
+        DateTime timeNow = DateTime.Now;
+        DateTime timeMidnight = DateTime.Today.AddDays(1);
+        TimeSpan ts = timeMidnight.Subtract(timeNow);
+        int secondsToMidnight = (int)ts.TotalSeconds;
+
+        var msUntillRun = secondsToMidnight * 1000 + 300000;
+
+        _logger.LogInformation($"Next Anomalitydection will run at : [{DateTime.Now.AddMilliseconds(msUntillRun)}]");
+        Thread.Sleep(msUntillRun);  //ikke optimalt men eneste måde vi havde tid til at finde ud af hvordan vi kunne kalde metoden hver 24 time
+
         _logger.LogInformation($"Detecting Anomalies : [{DateTime.Now}]");
         var date = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
         try
@@ -34,18 +45,6 @@ public class DetectAnomaliesService : IHostedService, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation($"AnomalityDetectorService Startet at : [{DateTime.Now}]");
-
-        //Countdown to midnight
-        DateTime timeNow = DateTime.Now;
-        DateTime timeMidnight = DateTime.Today.AddDays(1);
-        TimeSpan ts = timeMidnight.Subtract(timeNow);
-        int secondsToMidnight = (int)ts.TotalSeconds;
-
-        var msUntillRun = secondsToMidnight * 1000 + 300000;
-
-        _logger.LogInformation($"First Anomalitydection will run at : [{DateTime.Now.AddMilliseconds(msUntillRun)}]");
-        Thread.Sleep(msUntillRun);
-
         _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(_timespan));
         return Task.CompletedTask;
     }
@@ -61,5 +60,4 @@ public class DetectAnomaliesService : IHostedService, IDisposable
     {
         _timer?.Dispose();
     }
-
 }

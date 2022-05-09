@@ -25,10 +25,10 @@ public class AnomalyDetector : IAnomalyDetector
             Work(conn, query);
     }
 
-    public void Detect24Hours(DateTime time)
+    public void Detect24Hours(DateOnly time)
     {
-        var toDate = time.ToString("yyyy-MM-dd");
-        var fromDate = time.AddDays(-1).ToString("yyyy-MM-dd");
+        var fromDate = time.ToString("yyyy-MM-dd");
+        var toDate = time.AddDays(1).ToString("yyyy-MM-dd");
 
         var query = $"exec GetLogsBetween '{fromDate}', '{toDate}'";
         var conn = _sqlConn.CreateConnection();
@@ -43,17 +43,18 @@ public class AnomalyDetector : IAnomalyDetector
         Calculate(sortedLogs);
     }
 
-    private void Calculate(SortedLogs logs)
+    private void Calculate(SortedLogs sortedLogs)
     {
         var serviceAnomalies = new ServiceAnomalies(); //opret objekt for at vise resultater af anomaliteter
-        serviceAnomalies.Date= DateOnly.FromDateTime(DateTime.Now);
-        Parallel.ForEach(logs.Logs, list =>
+        //serviceAnomalies.Date = null;
+
+
+        Parallel.ForEach(sortedLogs.Logs, list =>
         {
             var logdata = list.Adapt<List<InputData>>();
             var mlContext = new MLContext();
             IDataView dataView = mlContext.Data.LoadFromEnumerable<InputData>(logdata);
             var predictions = DetectSpike(mlContext, list.Count(), dataView);
-
             var ravenlog = new RavenLog();
             try
             {
@@ -82,15 +83,17 @@ public class AnomalyDetector : IAnomalyDetector
                 anomaly.Servicename = list[0].ServiceName;
                 anomaly.AnomalyCount = ravenlog.NumberOfAnomalies;
                 serviceAnomalies.Anomalies.Add(anomaly);
-
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-
+            if (serviceAnomalies.Date != null)
+                serviceAnomalies.Date = DateOnly.FromDateTime(list[0].Time);
             _ravenDB.Save(ravenlog);
         });
+
+
 
         serviceAnomalies.Anomalies.Sort((x, y) => x.Servicename.CompareTo(y.Servicename));
         _ravenDB.Save(serviceAnomalies);

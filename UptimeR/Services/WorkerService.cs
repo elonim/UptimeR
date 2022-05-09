@@ -17,6 +17,7 @@ public class WorkerService : IHostedService, IDisposable
 
     private void DoWork(object? state) //yeah yeah yeah, I know this is a bit of a mess, but it runs as a singleton and uses scoped services, so it's fine.
     {
+        _logger.LogInformation($"Backgroundservice Logging Services : [{DateTime.Now}]");
         try
         {
             using var scope = _scopeFactory.CreateScope();

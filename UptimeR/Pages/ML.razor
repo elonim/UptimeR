@@ -14,22 +14,22 @@
 
         <p class="alert-info">@errorMessage</p>
 
-        <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
 
-        <br><br>
+        @* <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
 
-        <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
-        <br><br>
+            <br><br>
 
-        <!--datepicker her omkring ca...-->
+            <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
+            <br><br> *@
 
         <div>
             <input type="date" id="datepicker" @bind-value="date" class="form-control-sm" />
             <button class="btn btn-primary" @onclick="(() => GetAnomalies(date))">Indlæs logs</button>
         </div>
 
-
+        <br />
         <p>Anomalies Detected on @anomalies.Date</p>
+        <br />
         <table class="succes-table">
             <thead>
                 <tr>

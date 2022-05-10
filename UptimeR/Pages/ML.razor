@@ -1,4 +1,7 @@
 @page "/ML"
+@using System.Data
+@using Microsoft.AspNetCore.Mvc
+@using UptimeR.Extensions
 @using UptimeR.ML.Trainer.Interfaces
 @using Uptimer.ML.Reader
 @using UptimeR.ML.Domain.Models.RavenModels
@@ -16,12 +19,12 @@
         <p class="alert-info">@errorMessage</p>
 
 
-        @* <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
+        <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
 
-            <br><br>
+        <br><br>
 
-            <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
-            <br><br> *@
+        <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
+        <br><br>
 
         <div>
             <input type="date" id="datepicker" @bind-value="date" class="form-control-sm" />
@@ -53,8 +56,8 @@
                             <p>@a.AnomalyCount</p>
                         </td>
                         <td>
-                            <p><button class="btn btn-primary" @onclick="(() => DownloadLog(a.Servicename))">Download
-                                    Logs</button></p>
+                            <p><button class="btn btn-primary"
+                                @onclick="(() => DownloadLog(a.Servicename))">Download</button></p>
                         </td>
                     </tr>
                 }
@@ -78,15 +81,39 @@
     string errorMessage = "";
     DateOnly date = DateOnly.FromDateTime(DateTime.Now).AddDays(-1);
 
-    private async Task DownloadLog(string servicename)
+    public async Task<ActionResult> DownloadLog(string servicename)
     {
+
         try
         {
             var result = await Reader.GetAnomaliesForService(date, servicename);
+
+
+            //convert result to datatable
+            DataTable myDataTable = new DataTable();
+            myDataTable.Columns.Add("Time", typeof(string));
+            myDataTable.Columns.Add("Alert", typeof(string));
+            myDataTable.Columns.Add("Score", typeof(string));
+            myDataTable.Columns.Add("PValue", typeof(string));
+
+            foreach (var item in result.Logs)
+            {
+                myDataTable.Rows.Add(item.Time, item.Alert, item.Score, item.PValue);
+            }
+
+            var fileName = $"{servicename}-{date.ToString("yyyy-MM-dd")}.csv";
+            var output = myDataTable.ToCsvByteArray();
+
+            return new FileContentResult(output, "text/csv")
+            {
+                FileDownloadName = fileName
+            };
+
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
+            return null;
         }
     }
 

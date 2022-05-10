@@ -1,4 +1,5 @@
 using Raven.Client.Documents;
+using Raven.Client.Documents.Linq;
 using UptimeR.ML.Domain.Models.RavenModels;
 
 namespace Uptimer.ML.Reader;
@@ -53,7 +54,7 @@ public class Reader : IReader
 
             var result = await session
                 .Query<RavenLog>()
-                .Search(x => x.Date, new[] { date.ToString("yyyy-MM-dd") })
+                .Where(x => x.Date.In(date))
                 .Search(x => x.ServiceName, new[] { serviceName })
                 .SingleOrDefaultAsync();
 

@@ -1,12 +1,12 @@
 @page "/ML"
 @using System.Data
-@using Microsoft.AspNetCore.Mvc
 @using UptimeR.Extensions
 @using UptimeR.ML.Trainer.Interfaces
 @using Uptimer.ML.Reader
 @using UptimeR.ML.Domain.Models.RavenModels
 @inject IAnomalyDetector anomalyDetector
 @inject IReader Reader
+@inject IJSRuntime JSRuntime
 
 
 <h1>Machine Learning</h1>
@@ -65,6 +65,7 @@
         </table>
 
 
+
     </Authorized>
     <NotAuthorized>
         <div>
@@ -81,16 +82,14 @@
     string errorMessage = "";
     DateOnly date = DateOnly.FromDateTime(DateTime.Now).AddDays(-1);
 
-    public async Task<ActionResult> DownloadLog(string servicename)
+    public async Task DownloadLog(string servicename)
     {
-
         try
         {
             var result = await Reader.GetAnomaliesForService(date, servicename);
 
-
             //convert result to datatable
-            DataTable myDataTable = new DataTable();
+            var myDataTable = new DataTable();
             myDataTable.Columns.Add("Time", typeof(string));
             myDataTable.Columns.Add("Alert", typeof(string));
             myDataTable.Columns.Add("Score", typeof(string));
@@ -104,16 +103,11 @@
             var fileName = $"{servicename}-{date.ToString("yyyy-MM-dd")}.csv";
             var output = myDataTable.ToCsvByteArray();
 
-            return new FileContentResult(output, "text/csv")
-            {
-                FileDownloadName = fileName
-            };
-
+            await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/csv", output);
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
-            return null;
         }
     }
 

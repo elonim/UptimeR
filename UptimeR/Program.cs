@@ -71,6 +71,9 @@ else
     app.UseHsts();
 }
 
+
+app.MapGet("/hello", (Func<string>)(() => "Hello World!"));
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

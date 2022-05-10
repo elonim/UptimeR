@@ -1,6 +1,6 @@
 using Microsoft.ML.Data;
 
-namespace UptimeR.ML.Trainer.Models;
+namespace UptimeR.ML.Domain.Models.MLModels;
 
 public class InputData
 {

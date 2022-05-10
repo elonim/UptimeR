@@ -1,5 +1,5 @@
 
-namespace UptimeR.ML.Trainer.Models;
+namespace UptimeR.ML.Domain.Models.RavenModels;
 
 public class ServiceAnomalies
 {

@@ -1,4 +1,3 @@
-using UptimeR.Application.Interfaces;
 using UptimeR.Services.Worker;
 
 namespace UptimeR.Services;
@@ -22,11 +21,8 @@ public class WorkerService : IHostedService, IDisposable
         {
             using var scope = _scopeFactory.CreateScope();
             var worker = scope.ServiceProvider.GetRequiredService<IUptimeWorker>();
-            var useCases = scope.ServiceProvider.GetRequiredService<IURLUseCases>();
-            var logUseCases = scope.ServiceProvider.GetRequiredService<ILogHistoryUseCases>();
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-            worker.Work(unitOfWork, useCases, logUseCases);
+            worker.Work();
         }
         catch (Exception ex)
         {

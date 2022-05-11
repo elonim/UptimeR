@@ -2,7 +2,7 @@ using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using UptimeR.ML.Trainer.Interfaces;
 
-namespace UptimeR.ML.Trainer;
+namespace Uptimer.ML.Reader;
 
 
 public class SQLConn : ISQLConn
@@ -12,7 +12,7 @@ public class SQLConn : ISQLConn
     {
         _config = config;
     }
-    
+
     public SqlConnection CreateConnection()
     {
         return new SqlConnection(_config.GetConnectionString("DataConnection"));

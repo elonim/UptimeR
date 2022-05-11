@@ -7,11 +7,21 @@ using UptimeR.Application.Interfaces;
 
 namespace UptimeR.Services.Worker;
 
-public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class is a bit of a mess, but it runs as a singleton and uses scoped services, so it's fine.
+public class UptimeWorker : IUptimeWorker
 {
-    public void Work(IUnitOfWork unitOfWork, IURLUseCases useCases, ILogHistoryUseCases logHistoryUseCase)
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IURLUseCases _urlUseCases;
+    private readonly ILogHistoryUseCases _logHistoryUseCase;
+    public UptimeWorker(IUnitOfWork unitOfWork, IURLUseCases urlUseCases, ILogHistoryUseCases logHistoryUseCase)
     {
-        var models = useCases.GetAllUrls().Adapt<List<UpdateURLRequest>>();
+        _unitOfWork = unitOfWork;
+        _urlUseCases = urlUseCases;
+        _logHistoryUseCase = logHistoryUseCase;
+    }
+
+    public void Work()
+    {
+        var models = _urlUseCases.GetAllUrls().Adapt<List<UpdateURLRequest>>();
         var urls = models.Adapt<List<UpdateURLRequest>>();
         var timer = new Stopwatch();
         try
@@ -20,7 +30,7 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
             {
                 if (url.LastHitTime.AddMinutes(url.Interval) > DateTime.Now)
                     continue;
-                
+
                 timer.Start();
 
                 if (url.OnlyPing)
@@ -31,10 +41,10 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
 
                 timer.Stop();
 
-                UpdateURLToDatabase(useCases, unitOfWork, url);
+                UpdateURLToDatabase(url);
 
                 var latency = timer.Elapsed.TotalMilliseconds;
-                LogToDatabase(logHistoryUseCase, unitOfWork, url, latency);
+                LogToDatabase(url, latency);
 
                 timer.Reset();
             }
@@ -45,14 +55,14 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
         }
     }
 
-    private void UpdateURLToDatabase(IURLUseCases UseCases, IUnitOfWork unitOfWork, UpdateURLRequest url)
+    private void UpdateURLToDatabase(UpdateURLRequest url)
     {
         //update timestamps
         url.LastHitTime = DateTime.Now;
         if (url.LastResultOk)
             url.LastResultTimeOk = DateTime.Now;
-        UseCases.UpdateURL(url);
-        unitOfWork.SaveChanges();
+        _urlUseCases.UpdateURL(url);
+        _unitOfWork.SaveChanges();
     }
 
     private bool ReadUrl(string url)
@@ -84,7 +94,7 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
         }
     }
 
-    private void LogToDatabase(ILogHistoryUseCases logHistoryUse, IUnitOfWork unitOfWork, UpdateURLRequest url, double latency)
+    private void LogToDatabase(UpdateURLRequest url, double latency)
     {
         var used = TwoBools(url.OnlyPing);
 
@@ -98,8 +108,8 @@ public class UptimeWorker : IUptimeWorker   //yeah yeah yeah, I know this class 
             UsedPing = used.Ping,
             UsedHttp = used.Http
         };
-        logHistoryUse.AddLog(log);
-        unitOfWork.SaveChanges();
+        _logHistoryUseCase.AddLog(log);
+        _unitOfWork.SaveChanges();
     }
 
     private (bool Http, bool Ping) TwoBools(bool indput)

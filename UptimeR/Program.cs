@@ -54,7 +54,6 @@ builder.Services.AddHostedService(s => s.GetRequiredService<DetectAnomaliesServi
 builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
 builder.Services.AddScoped<IRavenDB, RavenDB>();
 builder.Services.AddScoped<ISQLConn, SQLConn>();
-builder.Services.AddScoped<IReader, Reader>();
 
 builder.Services.AddControllers();
 

@@ -7,10 +7,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="RavenDB.Client" Version="5.3.102" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Uptimer.ML.Domain\Uptimer.ML.Domain.csproj" />
+	  <ProjectReference Include="..\UptimeR.ML.Trainer\UptimeR.ML.Trainer.csproj" />
 	</ItemGroup>
 
 </Project>

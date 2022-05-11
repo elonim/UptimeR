@@ -2,11 +2,10 @@
 @using System.Data
 @using UptimeR.Extensions
 @using UptimeR.ML.Trainer.Interfaces
-@using Uptimer.ML.Reader
 @using UptimeR.ML.Domain.Models.RavenModels
 @inject IAnomalyDetector anomalyDetector
-@inject IReader Reader
 @inject IJSRuntime JSRuntime
+@inject IRavenDB ravenDB
 
 
 <h1>Machine Learning</h1>
@@ -86,7 +85,7 @@
     {
         try
         {
-            var result = await Reader.GetAnomaliesForService(date, servicename);
+            var result = await ravenDB.GetAnomaliesForService(date, servicename);
 
             //convert result to datatable
             var myDataTable = new DataTable();
@@ -149,6 +148,6 @@
 
     private async Task GetAnomalies(DateOnly date)
     {
-        anomalies = await Reader.GetAnomaliesForDate(date);
+        anomalies = await ravenDB.GetAnomaliesForDate(date);
     }
 }

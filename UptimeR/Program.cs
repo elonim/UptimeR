@@ -56,7 +56,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }
@@ -65,6 +65,18 @@ else
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+    context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+    context.Response.Headers.Add("X-Download-Options", "noopen");
+    context.Response.Headers.Add("X-Permitted-Cross-Domain-Policies", "none");
+    context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+    await next();
+});
 
 app.MapGet("/hello", (Func<string>)(() => "Hello World!"));
 

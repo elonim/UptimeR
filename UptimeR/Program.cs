@@ -40,20 +40,16 @@ builder.Services.AddAuthorization(options =>
 });
 
 
-//Background Service deaktiveret for ikke at lave dubletter hvis man debugger 
+builder.Services.AddScoped<IRavenDB, RavenDB>();
+builder.Services.AddScoped<ISQLConn, SQLConn>();
 
 builder.Services.AddScoped<IUptimeWorker, UptimeWorker>();
 builder.Services.AddSingleton<WorkerService>();
 builder.Services.AddHostedService(s => s.GetRequiredService<WorkerService>());
 
+builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
 builder.Services.AddSingleton<DetectAnomaliesService>();
 builder.Services.AddHostedService(s => s.GetRequiredService<DetectAnomaliesService>());
-
-
-
-builder.Services.AddScoped<IAnomalyDetector, AnomalyDetector>();
-builder.Services.AddScoped<IRavenDB, RavenDB>();
-builder.Services.AddScoped<ISQLConn, SQLConn>();
 
 builder.Services.AddControllers();
 
@@ -69,7 +65,6 @@ else
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
-
 
 app.MapGet("/hello", (Func<string>)(() => "Hello World!"));
 

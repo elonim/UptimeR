@@ -17,14 +17,6 @@
 
         <p class="alert-info">@errorMessage</p>
 
-
-        <button class="btn btn-primary" @onclick="Train">Train ALL logs</button>
-
-        <br><br>
-
-        <button class="btn btn-primary" @onclick="Train24">Train logs for 24 hours</button>
-        <br><br>
-
         <div>
             <input type="date" id="datepicker" @bind-value="date" class="form-control-sm" />
             <button class="btn btn-primary" @onclick="(() => GetAnomalies(date))">Indlæs logs</button>
@@ -103,30 +95,6 @@
             var output = myDataTable.ToCsvByteArray();
 
             await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/csv", output);
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-
-    private void Train()
-    {
-        try
-        {
-            anomalyDetector.Detect();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-
-    private void Train24()
-    {
-        try
-        {
-            anomalyDetector.Detect24Hours(date);
         }
         catch (Exception ex)
         {

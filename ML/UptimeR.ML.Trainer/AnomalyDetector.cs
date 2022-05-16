@@ -100,7 +100,7 @@ public class AnomalyDetector : IAnomalyDetector
         _ravenDB.Save(serviceAnomalies);
     }
 
-    private IEnumerable<AnomalyPrediction> DetectSpike(MLContext mlContext, int docSize, IDataView productSales)
+    private IEnumerable<AnomalyPrediction> DetectSpike(MLContext mlContext, int docSize, IDataView dataview)
     {
         try
         {
@@ -110,7 +110,7 @@ public class AnomalyDetector : IAnomalyDetector
                                     pvalueHistoryLength: docSize / 4);
 
             ITransformer iidSpikeTransform = iidSpikeEstimator.Fit(CreateEmptyDataView(mlContext));
-            IDataView transformedData = iidSpikeTransform.Transform(productSales);
+            IDataView transformedData = iidSpikeTransform.Transform(dataview);
             var predictions = mlContext.Data.CreateEnumerable<AnomalyPrediction>(transformedData, reuseRowObject: false);
             return predictions;
         }

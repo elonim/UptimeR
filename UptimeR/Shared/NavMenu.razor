@@ -22,15 +22,18 @@
         <AuthorizeView Policy="Admin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="SettingsPage">
-                        <span class="oi oi-wrench" aria-hidden="true" title="Settings"></span> Settings
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="ML">
                         <span class="oi oi-aperture" aria-hidden="true" title="Machine Learning"></span> Machine
                         Learning
                     </NavLink>
+                </div>
+                
+                    <div class="nav-item px-3">
+                        <div class="bottom_link">
+                        <NavLink class="nav-link" href="SettingsPage">
+                            <span class="oi oi-wrench" aria-hidden="true" title="Settings"></span> Settings
+                        </NavLink>
+                    </div>
                 </div>
             </Authorized>
         </AuthorizeView>

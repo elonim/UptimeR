@@ -54,6 +54,12 @@
                 }
             </tbody>
         </table>
+        
+        <br>
+        <br>
+        <p>For debugging <b>Don't touch</b></p>
+        <button class="btn btn-primary" @onclick="Train24">Train logs For selected day</button>
+        <br>
 
     </Authorized>
     <NotAuthorized>
@@ -115,5 +121,17 @@
     private async Task GetAnomalies(DateOnly date)
     {
         anomalies = await ravenDB.GetAnomaliesForDate(date);
+    }
+
+    private void Train24()
+    {
+        try
+        {
+            anomalyDetector.Detect24Hours(date);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
     }
 }

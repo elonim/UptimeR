@@ -66,10 +66,12 @@
         try
         {
             urls = await URLUseCases.GetAllUrlsAsync();
+            SortUrls();
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
         }
     }
+    private void SortUrls() => urls.Sort((x, y) => x.ServiceName.CompareTo(y.ServiceName));
 }

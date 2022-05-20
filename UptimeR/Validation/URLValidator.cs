@@ -34,12 +34,10 @@ public class URLValidator : AbstractValidator<CreateURLRequest>
 
     private bool ValidURL(string url)
     {
-        if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        if (Uri.IsWellFormedUriString(url, UriKind.Absolute))//Indpygget check for url ok
             return true;
-
-        if (ValidIPAddress(url))
+        if (ValidIPAddress(url))//manuel test hvis ikke url men ip
             return true;
-
         return false;
     }
 
@@ -47,11 +45,17 @@ public class URLValidator : AbstractValidator<CreateURLRequest>
     {
         string[] parts = url.Split(':');
 
-        var port = true;
-        if (parts.Length == 2 && !parts[1].All(char.IsDigit))
-            port = false;
+        if (parts.Length < 1 || parts.Length > 2)//test for at url ikke er blefet delt i for mange dele
+            return false;
 
-        if (IPAddress.TryParse(parts[0], out _) && port)
+        if (parts.Length == 2 && !parts[1].All(char.IsDigit))//test for at port er et tal
+            return false;
+
+        var port = int.Parse(parts[1]);
+        if (port <= 0 || port > 65535)//test for at port er mellem 0 og 65535
+            return false;
+
+        if (IPAddress.TryParse(parts[0], out _))//test for at ip er valid
             return true;
 
         return false;
